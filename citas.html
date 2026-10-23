@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Agendar cita · Monaco Studio</title>
+<meta name="description" content="Reservá tu turno online: elegí servicio, barbero, día y hora.">
+<meta name="theme-color" content="#0b0b0c">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gilda+Display&family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<main id="main">
+
+  <header class="page-hero"><div class="wrap"><span class="eyebrow">Reservas</span><h1>Agendá tu cita</h1><p>Cuatro pasos y listo. Te confirmamos desde la app.</p></div></header>
+  <section style="padding-top:36px"><div class="wrap">
+    <ol class="stepper" id="stepper" aria-label="Pasos de la reserva"></ol>
+    <div class="book"><div class="card" id="wiz" aria-live="polite"></div><aside class="card" id="sum"></aside></div>
+  </div></section>
+
+</main>
+<script src="js/data.js"></script>
+<script src="js/shared.js"></script>
+<script src="js/citas.js"></script>
+</body>
+</html>

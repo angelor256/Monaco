@@ -3,7 +3,7 @@
    así que para pasar a Supabase/Firebase se reemplaza este archivo
    manteniendo las mismas funciones async. */
 (function () {
-  const KEY = 'monaco_demo_v1';
+  const KEY = 'monaco_demo_v2';
   let mem = null;
 
   const pad = (n) => String(n).padStart(2, '0');
@@ -24,16 +24,16 @@
       mk('u2', 'Lucas Fernández', 'lucas@demo.com', '+54 9 11 5555 0102'),
       mk('u3', 'Santiago Pérez', 'santi@demo.com', '+54 9 11 5555 0103'),
     ];
-    const b = (userId, serviceId, off, time, status) => {
+    const b = (userId, serviceId, off, time, status, barberId = 'b1') => {
       const u = users.find((x) => x.id === userId);
-      return { id: uid(), userId, name: u.name, phone: u.phone, serviceId, date: ymd(addDays(today, off)), time, status, note: '', createdAt: new Date().toISOString() };
+      return { id: uid(), userId, name: u.name, phone: u.phone, serviceId, barberId, date: ymd(addDays(today, off)), time, status, note: '', createdAt: new Date().toISOString() };
     };
     return {
       settings: {
         name: 'Monaco Studio', tagline: 'Tu estilo, a otro nivel.',
         phone: '+54 9 11 5555 0000', whatsapp: '5491155550000', email: 'hola@monaco.demo',
         address: 'Av. Principal 1234, Ciudad', instagram: 'monaco.barberia',
-        currency: '$', chairs: 2, step: 30, cancelHours: 2, advanceDays: 30,
+        currency: '$', step: 30, cancelHours: 2, advanceDays: 30,
         // minutos desde 00:00; null = cerrado. 0 = domingo
         hours: { 0: null, 1: null, 2: [600, 1200], 3: [600, 1200], 4: [600, 1200], 5: [600, 1260], 6: [600, 1200] },
       },
@@ -45,10 +45,15 @@
         { id: 's5', name: 'Corte niño', desc: 'Hasta 12 años.', price: 6500, duration: 30, active: true },
         { id: 's6', name: 'Color / Platinado', desc: 'Decoloración y tono. Consultar según largo.', price: 25000, duration: 120, active: true },
       ],
+      barbers: [
+        { id: 'b1', name: 'Nico Monaco', role: 'Fundador · Master barber', bio: 'Más de 12 años con la navaja. Especialista en cortes clásicos y barba.', tags: ['Clásico', 'Navaja', 'Barba'], active: true },
+        { id: 'b2', name: 'Fede Ruiz', role: 'Barbero · Fade specialist', bio: 'Degradés limpios y cortes modernos. Si traés una foto, sale igual.', tags: ['Fade', 'Moderno', 'Diseños'], active: true },
+        { id: 'b3', name: 'Tomi Acosta', role: 'Barbero · Color', bio: 'Platinados, tono y estilo. Le encantan los cambios de look.', tags: ['Color', 'Platinado', 'Niños'], active: true },
+      ],
       users,
       bookings: [
-        b('u1', 's2', 0, '11:00', 'confirmed'), b('u2', 's1', 0, '15:30', 'pending'),
-        b('u3', 's4', 1, '12:00', 'pending'), b('u1', 's3', -7, '17:00', 'completed'),
+        b('u1', 's2', 0, '11:00', 'confirmed'), b('u2', 's1', 0, '15:30', 'pending', 'b2'),
+        b('u3', 's4', 1, '12:00', 'pending', 'b2'), b('u1', 's3', -7, '17:00', 'completed'),
         b('u2', 's1', -14, '13:00', 'noshow'),
       ],
       notifications: [
@@ -122,26 +127,36 @@
     },
 
     /* ---- disponibilidad y reservas ---- */
-    async getSlots(dateStr, serviceId) {
+    async getBarbers(all) { return load().barbers.filter((b) => all || b.active); },
+    async saveBarber(b) {
+      const db = load(); if (!b.name) fail('El barbero necesita un nombre.');
+      if (b.id) { const i = db.barbers.findIndex((x) => x.id === b.id); db.barbers[i] = { ...db.barbers[i], ...b }; }
+      else db.barbers.push({ tags: [], bio: '', ...b, id: 'b' + uid(), active: true });
+      save();
+    },
+    // barberId: id concreto o 'any' (cualquiera disponible). Cada barbero atiende de a un cliente.
+    async getSlots(dateStr, serviceId, barberId = 'any') {
       const db = load(), s = db.settings;
       const svc = db.services.find((x) => x.id === serviceId); if (!svc) return [];
       const [y, m, d] = dateStr.split('-').map(Number);
       const day = new Date(y, m - 1, d); const h = s.hours[day.getDay()]; if (!h) return [];
-      const taken = db.bookings.filter((b) => b.date === dateStr && (b.status === 'pending' || b.status === 'confirmed'))
+      const barbers = db.barbers.filter((b) => b.active && (barberId === 'any' || b.id === barberId));
+      const busy = (bid) => db.bookings.filter((b) => b.date === dateStr && b.barberId === bid && (b.status === 'pending' || b.status === 'confirmed'))
         .map((b) => { const sv = db.services.find((x) => x.id === b.serviceId); const st = toMin(b.time); return [st, st + (sv ? sv.duration : 30)]; });
+      const taken = Object.fromEntries(barbers.map((b) => [b.id, busy(b.id)]));
       const now = new Date(); const out = [];
       for (let t = h[0]; t + svc.duration <= h[1]; t += s.step) {
         if (new Date(y, m - 1, d, 0, t) <= now) continue;
-        const busy = taken.filter(([a, b2]) => t < b2 && t + svc.duration > a).length;
-        out.push({ time: fromMin(t), free: busy < s.chairs });
+        const freeBarber = barbers.find((b) => !taken[b.id].some(([a, e]) => t < e && t + svc.duration > a));
+        out.push({ time: fromMin(t), free: !!freeBarber, barberId: freeBarber ? freeBarber.id : null });
       }
       return out;
     },
-    async createBooking({ serviceId, date, time, note }) {
+    async createBooking({ serviceId, barberId = 'any', date, time, note }) {
       const db = load(); const u = db.users.find((x) => x.id === db.session); if (!u) fail('Iniciá sesión para reservar.');
-      const slots = await DB.getSlots(date, serviceId);
+      const slots = await DB.getSlots(date, serviceId, barberId);
       const sl = slots.find((x) => x.time === time); if (!sl || !sl.free) fail('Ese horario ya no está disponible. Elegí otro.');
-      const bk = { id: uid(), userId: u.id, name: u.name, phone: u.phone, serviceId, date, time, status: 'pending', note: note || '', createdAt: new Date().toISOString() };
+      const bk = { id: uid(), userId: u.id, name: u.name, phone: u.phone, serviceId, barberId: sl.barberId, date, time, status: 'pending', note: note || '', createdAt: new Date().toISOString() };
       db.bookings.push(bk); save(); return bk;
     },
     async listBookings(filter = {}) {
@@ -149,7 +164,7 @@
       let list = db.bookings.slice();
       if (filter.userId) list = list.filter((b) => b.userId === filter.userId);
       if (filter.date) list = list.filter((b) => b.date === filter.date);
-      return list.map((b) => ({ ...b, service: db.services.find((s) => s.id === b.serviceId) }))
+      return list.map((b) => ({ ...b, service: db.services.find((s) => s.id === b.serviceId), barber: db.barbers.find((x) => x.id === b.barberId) }))
         .sort((a, b) => bookingStart(a) - bookingStart(b));
     },
     async cancelOwnBooking(id) {

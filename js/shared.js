@@ -29,17 +29,35 @@
     b.querySelector('#resetDemo').onclick = async (e) => { e.preventDefault(); await DB.resetDemo(); location.href = 'index.html'; };
   };
 
+  /* Header + footer persistentes. active: 'home' | 'servicios' | 'citas' | 'equipo' | 'contacto' | otro */
+  const LINKS = [['home', 'index.html', 'Inicio'], ['servicios', 'servicios.html', 'Servicios'], ['equipo', 'equipo.html', 'Equipo'], ['contacto', 'contacto.html', 'Contacto']];
+  const LOGO = '<span class="m">Monaco</span><span class="s">STUDIO</span>';
   S.nav = async (active) => {
     const [user, st] = [await DB.currentUser(), await DB.getSettings()];
-        const h = document.createElement('header'); h.className = 'nav';
-    const home = active === 'home' ? '' : 'index.html';
-    h.innerHTML = `<div class="wrap"><a class="logo" href="index.html" aria-label="${S.esc(st.name)}"><span class="m">Monaco</span><span class="s">STUDIO</span></a>
-      <nav><a class="link" href="${home}#servicios">Servicios</a><a class="link" href="${home}#horarios">Horarios</a><a class="link" href="${home}#contacto">Contacto</a>
-      ${user ? `<a class="btn ghost sm" href="${user.role === 'admin' ? 'admin.html' : 'cuenta.html'}">${user.role === 'admin' ? 'Panel' : 'Mi cuenta'}</a>` : `<button class="btn ghost sm" id="navLogin">Ingresar</button>`}
-      <a class="btn sm" href="${home}#reservar">Reservar</a></nav></div>`;
-    document.body.querySelector('.demo-bar') ? document.body.querySelector('.demo-bar').after(h) : document.body.prepend(h);
+    const acct = user ? `<a class="btn ghost sm" href="${user.role === 'admin' ? 'admin.html' : 'cuenta.html'}" ${active === 'cuenta' || active === 'admin' ? 'aria-current="page"' : ''}>${user.role === 'admin' ? 'Panel' : 'Mi cuenta'}</a>` : '<button class="btn ghost sm" id="navLogin">Ingresar</button>';
+    const h = document.createElement('header'); h.className = 'nav';
+    h.innerHTML = `<div class="wrap"><a class="logo" href="index.html" aria-label="${S.esc(st.name)}, inicio">${LOGO}</a>
+      <button class="burger" id="burger" aria-label="Abrir menú" aria-expanded="false" aria-controls="menu"><i></i><i></i><i></i></button>
+      <nav id="menu" aria-label="Principal">${LINKS.map(([k, href, t]) => `<a class="link" href="${href}" ${k === active ? 'aria-current="page"' : ''}>${t}</a>`).join('')}
+        <span class="navend">${acct}<a class="btn sm" href="citas.html" ${active === 'citas' ? 'aria-current="page"' : ''}>Reservar</a></span></nav></div>`;
+    const bar = document.body.querySelector('.demo-bar'); bar ? bar.after(h) : document.body.prepend(h);
+    const burger = h.querySelector('#burger');
+    burger.onclick = () => { const o = h.classList.toggle('open'); burger.setAttribute('aria-expanded', o); burger.setAttribute('aria-label', o ? 'Cerrar menú' : 'Abrir menú'); };
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && h.classList.contains('open')) { burger.click(); burger.focus(); } });
     const l = h.querySelector('#navLogin'); if (l) l.onclick = () => S.openAuth().then((u) => u && (location.href = u.role === 'admin' ? 'admin.html' : 'cuenta.html'));
+    S.footer(st);
     return user;
+  };
+  S.footer = (st) => {
+    if (document.querySelector('.site-footer')) return;
+    const f = document.createElement('footer'); f.className = 'site-footer';
+    const open = [2, 3, 4, 5, 6].map((d) => st.hours[d]).find(Boolean);
+    f.innerHTML = `<div class="wrap foot-grid"><div><a class="logo" href="index.html">${LOGO}</a><p class="muted" style="margin-top:12px;max-width:30ch">${S.esc(st.tagline)}</p></div>
+      <div><h4>Explorar</h4>${LINKS.map(([, href, t]) => `<a href="${href}">${t}</a>`).join('')}<a href="citas.html">Reservar turno</a></div>
+      <div><h4>Visitanos</h4><p class="muted">${S.esc(st.address)}</p>${open ? `<p class="muted">Mar a Sáb · ${DB.util.fromMin(open[0])} – ${DB.util.fromMin(open[1])}</p>` : ''}</div>
+      <div><h4>Contacto</h4><a href="${S.waLink(st)}" target="_blank" rel="noopener">WhatsApp</a><a href="https://instagram.com/${S.esc(st.instagram)}" target="_blank" rel="noopener">Instagram</a><a href="tel:${S.esc(st.phone.replace(/[^\d+]/g, ''))}">${S.esc(st.phone)}</a></div></div>
+      <div class="wrap foot-end"><span>© ${new Date().getFullYear()} ${S.esc(st.name)}</span><a href="admin.html">Acceso dueño</a></div>`;
+    document.body.appendChild(f); S.waFloat(st);
   };
 
   /* Modal de login/registro. Devuelve una promesa con el usuario (o null si se cierra). */
@@ -75,6 +93,10 @@
     draw();
   });
 
+  S.svcCard = (s, st, bookLink = true) => `<article class="card svc"><h3>${S.esc(s.name)}</h3><p class="muted">${S.esc(s.desc)}</p>
+    <div class="meta"><span class="muted">⏱ ${s.duration} min</span><span class="price">${S.money(s.price, st.currency)}</span></div>
+    ${bookLink ? `<a class="btn ghost sm" href="citas.html?servicio=${encodeURIComponent(s.id)}">Reservar este servicio</a>` : ''}</article>`;
+  S.initials = (n) => n.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase();
   S.waLink = (st, text) => `https://wa.me/${st.whatsapp}?text=${encodeURIComponent(text || 'Hola! Quiero consultar por un turno.')}`;
   S.waFloat = (st) => {
     const a = document.createElement('a'); a.className = 'wa-float'; a.href = S.waLink(st); a.target = '_blank'; a.rel = 'noopener'; a.setAttribute('aria-label', 'Escribinos por WhatsApp');

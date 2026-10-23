@@ -9,7 +9,7 @@
   document.getElementById('hi').textContent = `Hola, ${user.name.split(' ')[0]}`;
 
   const bookingItem = (b, canCancel) => `<div class="item"><div><div class="when">${U.fmtDate(b.date)} · ${b.time}</div>
-    <div class="muted">${esc(b.service ? b.service.name : 'Servicio')} · ${U.money(b.service ? b.service.price : 0, st.currency)}</div></div>
+    <div class="muted">${esc(b.service ? b.service.name : 'Servicio')}${b.barber ? ' · con ' + esc(b.barber.name.split(' ')[0]) : ''} · ${U.money(b.service ? b.service.price : 0, st.currency)}</div></div>
     <div class="actions">${U.pill(b.status)}${canCancel ? `<button class="btn danger sm" data-c="${b.id}">Cancelar</button>` : ''}</div></div>`;
 
   const panes = {
@@ -17,7 +17,7 @@
       const all = await DB.listBookings({ userId: user.id }); const now = new Date();
       const up = all.filter((b) => DB.util.bookingStart(b) >= now && (b.status === 'pending' || b.status === 'confirmed'));
       const past = all.filter((b) => !up.includes(b)).reverse();
-      el.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><h3>Próximos</h3><a class="btn sm" href="index.html#reservar">Nueva reserva</a></div>
+      el.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><h3>Próximos</h3><a class="btn sm" href="citas.html">Nueva reserva</a></div>
         ${up.length ? up.map((b) => bookingItem(b, true)).join('') : '<div class="empty">No tenés turnos próximos.</div>'}
         <h3 style="margin:28px 0 12px">Historial</h3>${past.length ? past.map((b) => bookingItem(b, false)).join('') : '<div class="empty">Todavía no hay historial.</div>'}`;
       el.querySelectorAll('[data-c]').forEach((b) => (b.onclick = () => U.run(async () => {

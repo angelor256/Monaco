@@ -1,5 +1,5 @@
-const CACHE='monaco-v1';
-const ASSETS=['index.html','cuenta.html','css/styles.css','js/data.js','js/shared.js','js/home.js','js/cuenta.js','icon.svg'];
+const CACHE='monaco-v2';
+const ASSETS=['index.html','servicios.html','citas.html','equipo.html','contacto.html','cuenta.html','css/styles.css','js/data.js','js/shared.js','js/home.js','js/servicios.js','js/citas.js','js/equipo.js','js/contacto.js','js/cuenta.js','icon.svg'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==CACHE).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});
 // red primero, caché como respaldo offline
