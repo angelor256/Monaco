@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Monaco Studio · Barbería y reservas online</title>
+<meta name="description" content="Monaco Studio: cortes, fade y barba a navaja. Reservá tu turno online en menos de un minuto.">
+<meta name="theme-color" content="#0b0b0c">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gilda+Display&family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<main id="main">
+
+  <section class="hero">
+    <div class="wrap">
+      <span class="eyebrow">Monaco Studio · barbería</span>
+      <h1>Tu estilo, <em>a otro nivel</em>.</h1>
+      <p class="lead">Tijera, navaja y buena charla. Reservá tu turno online en menos de un minuto, sin llamadas ni esperas.</p>
+      <div class="cta"><a class="btn shine" href="citas.html">Reservar turno</a><a class="btn ghost" href="servicios.html">Ver servicios y precios</a></div>
+      <div class="stats"><div><b>30'</b><span>un corte, bien hecho</span></div><div><b>100%</b><span>reserva online</span></div><div><b>2 h</b><span>cancelás sin cargo</span></div></div>
+    </div>
+    <div class="pole" aria-hidden="true"><div class="stripes"></div></div>
+    <svg class="swoosh" viewBox="0 0 1200 220" preserveAspectRatio="none" aria-hidden="true"><path class="draw" pathLength="1" d="M0 40C250 10 450 90 700 150S1050 200 1200 170" fill="none" stroke="#d4a85a" stroke-width="2"/><path class="draw d2" pathLength="1" d="M0 70C300 50 520 130 760 175S1080 215 1200 205" fill="none" stroke="#d4a85a" stroke-width="1" opacity=".6"/><g class="tw" fill="#ecd08e"><path d="M300 62l4 10 10 4-10 4-4 10-4-10-10-4 10-4z"/><path d="M840 160l3 8 8 3-8 3-3 8-3-8-8-3 8-3z"/></g></svg>
+  </section>
+
+  <div class="marquee" aria-hidden="true"><div class="track"><span>Corte clásico ✦ Fade ✦ Barba a navaja ✦ Toalla caliente ✦ Color ✦ Corte niño ✦ </span><span>Corte clásico ✦ Fade ✦ Barba a navaja ✦ Toalla caliente ✦ Color ✦ Corte niño ✦ </span></div></div>
+
+  <section class="alt"><div class="wrap">
+    <div class="sec-head" style="display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap"><div><span class="eyebrow">Servicios</span><h2>Lo más pedido</h2></div><a class="btn ghost sm" href="servicios.html">Ver todos</a></div>
+    <div class="grid" id="svcGrid" aria-live="polite"></div>
+  </div></section>
+
+  <section><div class="wrap">
+    <div class="sec-head center"><span class="eyebrow">Por qué Monaco</span><h2>Más que un corte</h2></div>
+    <div class="feat">
+      <div class="card"><div class="ic" data-ic="scissors"></div><h3>Oficio de verdad</h3><p class="muted">Tijera, navaja y terminaciones prolijas, hechas sin apuro.</p></div>
+      <div class="card"><div class="ic" data-ic="clock"></div><h3>Tu tiempo importa</h3><p class="muted">Reservás el horario exacto. Sin esperas ni sorpresas.</p></div>
+      <div class="card"><div class="ic" data-ic="star"></div><h3>Experiencia premium</h3><p class="muted">Toalla caliente, buena música y un lugar para desconectar.</p></div>
+    </div>
+  </div></section>
+
+  <section class="alt"><div class="wrap split">
+    <div><span class="eyebrow">Horarios</span><h2 style="margin:8px 0 20px">Cuándo abrimos</h2><div class="hours" id="hours"></div></div>
+    <div class="card"><h3 style="margin-bottom:8px">¿Primera vez en Monaco?</h3><p class="muted" style="margin-bottom:18px">Elegí servicio y barbero, mirá los horarios libres y confirmá. Te avisamos en cuanto el turno queda confirmado.</p><a class="btn shine" href="citas.html">Agendar mi cita</a></div>
+  </div></section>
+
+  <section><div class="wrap">
+    <div class="sec-head center"><span class="eyebrow">Clientes</span><h2>Lo que dicen de nosotros</h2></div>
+    <div class="quotes">
+      <figure class="card quote"><div class="stars" aria-label="5 estrellas">★★★★★</div><p>“El mejor fade que me hicieron. Reservé desde el celu y llegué justo a mi hora.”</p><cite>Matías R.</cite></figure>
+      <figure class="card quote"><div class="stars" aria-label="5 estrellas">★★★★★</div><p>“La barba con toalla caliente es otro nivel. Ya es mi lugar fijo cada mes.”</p><cite>Lucas F.</cite></figure>
+      <figure class="card quote"><div class="stars" aria-label="5 estrellas">★★★★★</div><p>“Llevé a mi hijo y quedó feliz. Atención impecable y súper puntuales.”</p><cite>Santiago P.</cite></figure>
+    </div>
+    <p class="muted center" style="margin-top:14px;font-size:.8rem">Testimonios de ejemplo para la demo.</p>
+  </div></section>
+
+  <section style="padding-top:0"><div class="wrap"><div class="band"><span class="eyebrow">Tu turno</span><h2>Listo para tu próximo corte</h2><p>Elegí tu barbero y tu horario en un minuto.</p><a class="btn shine" href="citas.html">Reservar ahora</a></div></div></section>
+
+</main>
+<script src="js/data.js"></script>
+<script src="js/shared.js"></script>
+<script src="js/home.js"></script>
+</body>
+</html>
