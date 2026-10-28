@@ -40,7 +40,7 @@
     servicios: { label: 'Servicios', async render(el) {
       const list = await DB.getServices(true);
       const form = (s = {}) => `<form class="card" data-id="${s.id || ''}" style="margin-bottom:12px"><div class="row2"><div class="field"><label>Nombre</label><input name="name" value="${esc(s.name)}" required></div><div class="field"><label>Descripción</label><input name="desc" value="${esc(s.desc)}"></div></div>
-        <div class="row2"><div class="field"><label>Precio (${esc(st.currency)})</label><input name="price" type="number" min="0" value="${s.price ?? ''}" required></div><div class="field"><label>Duración (min)</label><input name="duration" type="number" min="15" step="15" value="${s.duration ?? 30}" required></div></div>
+        <div class="row2"><div class="field"><label>Precio (colones, ₡)</label><input name="price" type="number" min="0" value="${s.price ?? ''}" required></div><div class="field"><label>Duración (min)</label><input name="duration" type="number" min="15" step="15" value="${s.duration ?? 30}" required></div></div>
         <div class="actions" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><button class="btn sm" type="submit">${s.id ? 'Guardar' : 'Agregar servicio'}</button>
         ${s.id ? `<label class="check" style="margin:0"><input type="checkbox" name="active" ${s.active ? 'checked' : ''}> Visible</label><button class="btn danger sm" type="button" data-del="${s.id}">Eliminar</button>` : ''}</div></form>`;
       el.innerHTML = `<h3 style="margin-bottom:12px">Nuevo</h3>${form()}<h3 style="margin:24px 0 12px">Catálogo</h3>${list.map(form).join('')}`;

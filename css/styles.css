@@ -227,3 +227,64 @@ details.faq p{color:var(--muted);padding-bottom:16px}
 .site-footer .logo{align-items:flex-start}.site-footer .logo .s{text-indent:0}
 .hero{padding-bottom:clamp(120px,16vw,190px)}
 .hero .swoosh{height:150px;opacity:.3}
+
+/* ===== v3: más vida ===== */
+@view-transition{navigation:auto}
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+@keyframes twinkle{0%,100%{opacity:.08;transform:scale(.6)}50%{opacity:.9;transform:scale(var(--s,1))}}
+@keyframes draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes glow{0%,100%{opacity:.7}50%{opacity:1}}
+@keyframes stripes{to{transform:translateY(-50.91px)}}
+@keyframes marquee{to{transform:translateX(-50%)}}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(37,211,102,.55)}80%,100%{box-shadow:0 0 0 18px rgba(37,211,102,0)}}
+@keyframes pop{0%{transform:scale(.92)}60%{transform:scale(1.04)}100%{transform:scale(1)}}
+
+.nav{transition:box-shadow .3s,background .3s}.nav.scrolled{box-shadow:0 8px 30px rgba(0,0,0,.5);background:rgba(11,11,12,.95)}
+/* entrada escalonada del héroe */
+.hero .eyebrow,.hero h1,.hero .lead,.hero .cta,.hero .stats,.page-hero .eyebrow,.page-hero h1,.page-hero p{animation:fadeUp .8s cubic-bezier(.2,.7,.2,1) both}
+.hero h1,.page-hero h1{animation-delay:.1s}.hero .lead,.page-hero p{animation-delay:.22s}.hero .cta{animation-delay:.34s}.hero .stats{animation-delay:.46s}
+.hero h1 em{background:linear-gradient(100deg,var(--gold) 20%,var(--gold2) 50%,var(--gold) 80%);background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shimmer 5s linear infinite}
+@keyframes shimmer{to{background-position:200% center}}
+.hero::before{content:"";position:absolute;inset:-20% -10% auto auto;width:70%;height:90%;background:radial-gradient(closest-side,rgba(212,168,90,.2),transparent);animation:glow 6s ease-in-out infinite;pointer-events:none}
+.swoosh .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:draw 2.6s .3s ease-out forwards}.swoosh .draw.d2{animation-delay:.7s}
+.swoosh .tw path{transform-box:fill-box;transform-origin:center;animation:twinkle 3s ease-in-out infinite}.swoosh .tw path:last-child{animation-delay:1.4s}
+.sparks{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.sparks i{position:absolute;width:5px;height:5px;background:var(--gold2);transform:rotate(45deg) scale(.6);opacity:.1;border-radius:1px;animation:twinkle var(--d,3s) ease-in-out infinite}
+.hero .wrap,.page-hero .wrap{position:relative;z-index:1}
+/* poste de barbero animado */
+.pole{position:absolute;right:max(6%,calc(50% - 480px + 24px));top:46%;transform:translateY(-50%);width:68px;height:250px;border-radius:40px;border:2px solid var(--gold);overflow:hidden;display:none;box-shadow:0 0 60px rgba(212,168,90,.25);background:#111}
+.pole .stripes{position:absolute;left:0;right:0;top:0;height:calc(100% + 60px);background:repeating-linear-gradient(135deg,var(--gold) 0 12px,var(--text) 12px 24px,#2a2a2d 24px 36px);animation:stripes 2.4s linear infinite}
+.pole::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.55),rgba(255,255,255,.18) 35%,rgba(0,0,0,0) 55%,rgba(0,0,0,.6))}
+@media(min-width:1000px){.pole{display:block}}
+/* cinta de servicios */
+.marquee{overflow:hidden;border-block:1px solid var(--line);background:var(--bg2);padding:14px 0;white-space:nowrap}
+.marquee .track{display:inline-flex;animation:marquee 30s linear infinite}
+.marquee span{font-family:var(--serif);font-size:1.25rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;padding-right:.5em}
+.marquee:hover .track{animation-play-state:paused}
+/* aparición al scroll */
+.rv{opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
+.rv.in{opacity:1;transform:none}
+/* tarjetas con brillo y elevación */
+.card{position:relative;overflow:hidden;transition:transform .3s,border-color .3s,box-shadow .3s}
+.card::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .3s;background:radial-gradient(260px circle at var(--mx,50%) var(--my,50%),rgba(212,168,90,.16),transparent 70%)}
+.card:hover::after{opacity:1}
+@media(hover:hover){.feat .card:hover,.quote:hover,.barber:hover{transform:translateY(-4px);border-color:rgba(212,168,90,.5)}.card.svc:hover{box-shadow:0 14px 40px rgba(212,168,90,.12)}}
+.card.rv.in:hover{transition-delay:0ms!important}
+.price{text-shadow:0 0 24px rgba(212,168,90,.35)}
+.avatar{transition:transform .4s,box-shadow .4s}.barber:hover .avatar{transform:scale(1.07) rotate(-3deg);box-shadow:0 0 0 6px rgba(212,168,90,.12),0 0 40px rgba(212,168,90,.3)}
+.feat .ic svg,.info-list .ic svg{display:block}.feat .card:hover .ic{background:var(--gold);color:var(--on-gold)}.feat .ic{transition:.3s}
+/* botones */
+.btn{position:relative;overflow:hidden}
+.btn:active{transform:scale(.97)}
+.btn.shine::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-20deg);animation:sheen 4s 1.5s ease-in-out infinite}
+@keyframes sheen{0%{left:-60%}30%,100%{left:140%}}
+.wa-float{animation:ping 2.6s infinite;transition:transform .2s}.wa-float:hover{transform:scale(1.1)}
+/* reserva */
+.day.sel,.slot.sel,.opt.sel{animation:pop .25s}
+.slot:not([disabled]):hover,.day:not([disabled]):hover{border-color:var(--gold)}
+.stepper li::before{transition:.3s}
+.done-check{width:76px;height:76px;border-radius:50%;margin:0 auto 10px;display:grid;place-items:center;background:rgba(212,168,90,.14);border:1px solid var(--gold);color:var(--gold);animation:pop .5s}
+details.faq{transition:border-color .2s}details.faq[open]{border-color:var(--gold)}
+.shot{transition:transform .4s,border-color .4s}.shot:hover{transform:scale(1.03);border-color:var(--gold)}
+.hours div{transition:padding .2s}.hours div:hover{padding-left:8px}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}.swoosh .draw{stroke-dashoffset:0}}

@@ -52,7 +52,7 @@
         <p><a class="btn" href="${U.waLink(st)}" target="_blank" rel="noopener">Escribinos por WhatsApp</a></p>
         <p class="muted" style="margin-top:12px">${esc(st.email)} · ${esc(st.address)}</p>
         <h3 style="margin:22px 0 8px">Política de cancelación</h3><p class="muted">Podés cancelar sin cargo hasta ${st.cancelHours} horas antes del turno desde la app. Después, escribinos por WhatsApp.</p>
-        <h3 style="margin:22px 0 8px">Pagos</h3><p class="muted">El pago se coordina directamente en el local (efectivo o transferencia).</p></div>`;
+        <h3 style="margin:22px 0 8px">Pagos</h3><p class="muted">El pago se coordina directamente en el local (efectivo, SINPE Móvil o tarjeta).</p></div>`;
     } },
   };
   const tabs = U.tabs(document.getElementById('bar'), panes);

@@ -3,7 +3,7 @@
    así que para pasar a Supabase/Firebase se reemplaza este archivo
    manteniendo las mismas funciones async. */
 (function () {
-  const KEY = 'monaco_demo_v2';
+  const KEY = 'monaco_demo_v3';
   let mem = null;
 
   const pad = (n) => String(n).padStart(2, '0');
@@ -20,9 +20,9 @@
     });
     const users = [
       { id: 'admin', name: 'Monaco', email: 'admin@monaco.demo', password: 'monaco123', phone: '', role: 'admin', createdAt: new Date().toISOString() },
-      mk('u1', 'Matías Rojas', 'matias@demo.com', '+54 9 11 5555 0101'),
-      mk('u2', 'Lucas Fernández', 'lucas@demo.com', '+54 9 11 5555 0102'),
-      mk('u3', 'Santiago Pérez', 'santi@demo.com', '+54 9 11 5555 0103'),
+      mk('u1', 'Matías Rojas', 'matias@demo.com', '+506 8801 0101'),
+      mk('u2', 'Lucas Fernández', 'lucas@demo.com', '+506 8802 0102'),
+      mk('u3', 'Santiago Pérez', 'santi@demo.com', '+506 8803 0103'),
     ];
     const b = (userId, serviceId, off, time, status, barberId = 'b1') => {
       const u = users.find((x) => x.id === userId);
@@ -31,19 +31,19 @@
     return {
       settings: {
         name: 'Monaco Studio', tagline: 'Tu estilo, a otro nivel.',
-        phone: '+54 9 11 5555 0000', whatsapp: '5491155550000', email: 'hola@monaco.demo',
-        address: 'Av. Principal 1234, Ciudad', instagram: 'monaco.barberia',
-        currency: '$', step: 30, cancelHours: 2, advanceDays: 30,
+        phone: '+506 8888 8888', whatsapp: '50688888888', email: 'hola@monaco.demo',
+        address: 'Barrio Escalante, San José, Costa Rica', instagram: 'monaco.barberia',
+        currency: '₡', step: 30, cancelHours: 2, advanceDays: 30,
         // minutos desde 00:00; null = cerrado. 0 = domingo
         hours: { 0: null, 1: null, 2: [600, 1200], 3: [600, 1200], 4: [600, 1200], 5: [600, 1260], 6: [600, 1200] },
       },
       services: [
-        { id: 's1', name: 'Corte clásico', desc: 'Tijera y máquina, terminación con navaja en el contorno.', price: 8000, duration: 30, active: true },
-        { id: 's2', name: 'Corte + barba', desc: 'El combo completo: corte, perfilado y barba con toalla caliente.', price: 12000, duration: 60, active: true },
-        { id: 's3', name: 'Barba', desc: 'Perfilado, vapor y afeitado a navaja.', price: 6000, duration: 30, active: true },
-        { id: 's4', name: 'Fade / Degradé', desc: 'Degradé a medida, bien prolijo.', price: 9000, duration: 45, active: true },
-        { id: 's5', name: 'Corte niño', desc: 'Hasta 12 años.', price: 6500, duration: 30, active: true },
-        { id: 's6', name: 'Color / Platinado', desc: 'Decoloración y tono. Consultar según largo.', price: 25000, duration: 120, active: true },
+        { id: 's1', name: 'Corte clásico', desc: 'Tijera y máquina, terminación con navaja en el contorno.', price: 6500, duration: 30, active: true },
+        { id: 's2', name: 'Corte + barba', desc: 'El combo completo: corte, perfilado y barba con toalla caliente.', price: 10000, duration: 60, active: true },
+        { id: 's3', name: 'Barba', desc: 'Perfilado, vapor y afeitado a navaja.', price: 4500, duration: 30, active: true },
+        { id: 's4', name: 'Fade / Degradé', desc: 'Degradé a medida, bien prolijo.', price: 7500, duration: 45, active: true },
+        { id: 's5', name: 'Corte niño', desc: 'Hasta 12 años.', price: 5000, duration: 30, active: true },
+        { id: 's6', name: 'Color / Platinado', desc: 'Decoloración y tono. Consultar según largo.', price: 30000, duration: 120, active: true },
       ],
       barbers: [
         { id: 'b1', name: 'Nico Monaco', role: 'Fundador · Master barber', bio: 'Más de 12 años con la navaja. Especialista en cortes clásicos y barba.', tags: ['Clásico', 'Navaja', 'Barba'], active: true },

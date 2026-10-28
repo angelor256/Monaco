@@ -5,7 +5,7 @@
   S.esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   S.$ = (sel, el = document) => el.querySelector(sel);
   S.$$ = (sel, el = document) => [...el.querySelectorAll(sel)];
-  S.money = (n, cur) => `${cur || '$'}${Number(n).toLocaleString('es-AR')}`;
+  S.money = (n, cur) => `${cur || '₡'}${String(Math.round(Number(n))).replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0')}`; // ₡10 000 (formato de Costa Rica)
   const DOW = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
   S.DOW = DOW;
   S.fmtDate = (ds) => { const [y, m, d] = ds.split('-').map(Number); const dt = new Date(y, m - 1, d); return `${DOW[dt.getDay()].slice(0, 3)} ${d}/${m}`; };
@@ -29,6 +29,69 @@
     b.querySelector('#resetDemo').onclick = async (e) => { e.preventDefault(); await DB.resetDemo(); location.href = 'index.html'; };
   };
 
+
+  /* ---- iconos SVG (sin emojis) ---- */
+  const ICONS = {
+    pin: '<path d="M12 21s-7-6.2-7-11a7 7 0 0114 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/>',
+    phone: '<path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2z"/>',
+    chat: '<path d="M21 12a8 8 0 01-11.6 7.1L4 20l1-4.6A8 8 0 1121 12z"/>',
+    camera: '<rect x="3" y="6" width="18" height="14" rx="3"/><circle cx="12" cy="13" r="3.5"/><path d="M8 6l1.5-2h5L16 6"/>',
+    clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+    scissors: '<circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M8.5 7.5L20 18M8.5 16.5L20 6"/>',
+    star: '<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',
+  };
+  S.icon = (n) => `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n] || ''}</svg>`;
+
+  /* ---- efectos: aparición al hacer scroll, contadores, destellos, brillo en tarjetas ---- */
+  S.fx = () => {
+    if (S._fx) return; S._fx = true;
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const fill = (root) => root.querySelectorAll('[data-ic]').forEach((el) => { el.innerHTML = S.icon(el.dataset.ic); el.removeAttribute('data-ic'); });
+    fill(document);
+
+    // barra superior con sombra al hacer scroll
+    const nav = document.querySelector('.nav'); const onScroll = () => nav && nav.classList.toggle('scrolled', scrollY > 8);
+    addEventListener('scroll', onScroll, { passive: true }); onScroll();
+
+    // destellos dorados en los héroes
+    document.querySelectorAll('.hero, .page-hero').forEach((h) => {
+      if (reduce || h.querySelector('.sparks')) return;
+      const w = document.createElement('div'); w.className = 'sparks'; w.setAttribute('aria-hidden', 'true');
+      for (let i = 0; i < 16; i++) { const d = document.createElement('i'); d.style.cssText = `left:${Math.random() * 100}%;top:${Math.random() * 100}%;--d:${(2 + Math.random() * 4).toFixed(1)}s;--s:${(0.4 + Math.random() * 0.9).toFixed(2)};animation-delay:${(Math.random() * 4).toFixed(1)}s`; w.appendChild(d); }
+      h.prepend(w);
+    });
+
+    // contadores (30', 100%, 2 h)
+    const count = (el) => {
+      const m = el.textContent.match(/^(\d+)(.*)$/); if (!m || reduce) return;
+      const to = +m[1], suf = m[2], t0 = performance.now();
+      const tick = (t) => { const p = Math.min(1, (t - t0) / 1400); el.textContent = Math.round(to * (1 - Math.pow(1 - p, 3))) + suf; if (p < 1) requestAnimationFrame(tick); };
+      el.textContent = '0' + suf; requestAnimationFrame(tick);
+    };
+
+    const io = 'IntersectionObserver' in window ? new IntersectionObserver((es) => es.forEach((e) => {
+      if (!e.isIntersecting) return; e.target.classList.add('in'); io.unobserve(e.target);
+      if (e.target.matches('.stats b')) count(e.target);
+    }), { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }) : null;
+
+    const SEL = '.card, .sec-head, .opt, .shot, .band, .hours, details.faq, .info-list > *, .stats > div, .stats b';
+    const scan = (root) => {
+      fill(root);
+      root.querySelectorAll(SEL).forEach((el) => {
+        if (el._rv) return; el._rv = true;
+        if (el.matches('.stats b')) { io && io.observe(el); return; }
+        if (reduce || !io || el.closest('.modal, .tabbar, #pane')) return;
+        const i = [...el.parentElement.children].indexOf(el);
+        el.classList.add('rv'); el.style.transitionDelay = Math.min(i, 5) * 70 + 'ms'; io.observe(el);
+      });
+    };
+    scan(document.body);
+    new MutationObserver((ms) => ms.forEach((m) => m.addedNodes.forEach((n) => n.nodeType === 1 && scan(n)))).observe(document.getElementById('main') || document.body, { childList: true, subtree: true });
+
+    // brillo que sigue al mouse sobre las tarjetas
+    document.addEventListener('pointermove', (e) => { const c = e.target.closest && e.target.closest('.card'); if (!c) return; const r = c.getBoundingClientRect(); c.style.setProperty('--mx', e.clientX - r.left + 'px'); c.style.setProperty('--my', e.clientY - r.top + 'px'); }, { passive: true });
+  };
+
   /* Header + footer persistentes. active: 'home' | 'servicios' | 'citas' | 'equipo' | 'contacto' | otro */
   const LINKS = [['home', 'index.html', 'Inicio'], ['servicios', 'servicios.html', 'Servicios'], ['equipo', 'equipo.html', 'Equipo'], ['contacto', 'contacto.html', 'Contacto']];
   const LOGO = '<span class="m">Monaco</span><span class="s">STUDIO</span>';
@@ -45,7 +108,7 @@
     burger.onclick = () => { const o = h.classList.toggle('open'); burger.setAttribute('aria-expanded', o); burger.setAttribute('aria-label', o ? 'Cerrar menú' : 'Abrir menú'); };
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && h.classList.contains('open')) { burger.click(); burger.focus(); } });
     const l = h.querySelector('#navLogin'); if (l) l.onclick = () => S.openAuth().then((u) => u && (location.href = u.role === 'admin' ? 'admin.html' : 'cuenta.html'));
-    S.footer(st);
+    S.footer(st); S.fx();
     return user;
   };
   S.footer = (st) => {

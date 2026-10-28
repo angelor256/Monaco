@@ -26,7 +26,7 @@
     stepper(); summary();
     if (done) {
       const b = barbers.find((x) => x.id === done.barberId);
-      wiz.innerHTML = `<div class="center" style="padding:16px 0"><div style="font-size:3rem" aria-hidden="true">✂️</div><h2 style="font-size:1.8rem;margin:8px 0">¡Listo, ${esc(user.name.split(' ')[0])}!</h2>
+      wiz.innerHTML = `<div class="center" style="padding:16px 0"><div class="done-check" aria-hidden="true"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><h2 style="font-size:1.8rem;margin:8px 0">¡Listo, ${esc(user.name.split(' ')[0])}!</h2>
         <p class="muted">Tu turno del <b>${U.fmtDate(done.date)} a las ${done.time}</b>${b ? ` con <b>${esc(b.name)}</b>` : ''} quedó <b>pendiente de confirmación</b>. Te avisamos en la app apenas lo confirmemos.</p>
         <div style="display:flex;gap:10px;justify-content:center;margin-top:22px;flex-wrap:wrap"><a class="btn" href="cuenta.html">Ver mis reservas</a><a class="btn ghost" href="citas.html">Reservar otro</a></div></div>`;
       return;

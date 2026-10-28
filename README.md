@@ -18,3 +18,5 @@ Las contraseñas del demo son texto plano en el navegador; no usar en producció
 
 ## Pendiente para producción
 Backend + Auth real con reglas por usuario, Web Push (el `sw.js` ya tiene los handlers), logo en imagen (hoy es wordmark en texto), fotos reales.
+
+Precios en colones costarricenses (₡). Los valores del catálogo son de ejemplo; el dueño los edita en Panel → Servicios.
