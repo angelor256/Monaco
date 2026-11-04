@@ -39,13 +39,14 @@
     } },
     servicios: { label: 'Servicios', async render(el) {
       const list = await DB.getServices(true);
-      const form = (s = {}) => `<form class="card" data-id="${s.id || ''}" style="margin-bottom:12px"><div class="row2"><div class="field"><label>Nombre</label><input name="name" value="${esc(s.name)}" required></div><div class="field"><label>Descripción</label><input name="desc" value="${esc(s.desc)}"></div></div>
+      const form = (s = {}) => `<form class="card" data-id="${s.id || ''}" style="margin-bottom:12px"><div class="row2"><div class="field"><label>Nombre</label><input name="name" value="${esc(s.name)}" required></div><div class="field"><label>Área</label><select name="cat">${DB.getCategories().map((c) => `<option value="${c.id}" ${s.cat === c.id ? 'selected' : ''}>${esc(c.name)}</option>`).join('')}</select></div></div>
+        <div class="row2"><div class="field"><label>Descripción</label><input name="desc" value="${esc(s.desc)}"></div></div>
         <div class="row2"><div class="field"><label>Precio (colones, ₡)</label><input name="price" type="number" min="0" value="${s.price ?? ''}" required></div><div class="field"><label>Duración (min)</label><input name="duration" type="number" min="15" step="15" value="${s.duration ?? 30}" required></div></div>
         <div class="actions" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><button class="btn sm" type="submit">${s.id ? 'Guardar' : 'Agregar servicio'}</button>
         ${s.id ? `<label class="check" style="margin:0"><input type="checkbox" name="active" ${s.active ? 'checked' : ''}> Visible</label><button class="btn danger sm" type="button" data-del="${s.id}">Eliminar</button>` : ''}</div></form>`;
       el.innerHTML = `<h3 style="margin-bottom:12px">Nuevo</h3>${form()}<h3 style="margin:24px 0 12px">Catálogo</h3>${list.map(form).join('')}`;
       el.querySelectorAll('form').forEach((f) => (f.onsubmit = (e) => { e.preventDefault(); U.run(async () => {
-        const d = Object.fromEntries(new FormData(f)); const s = { name: d.name.trim(), desc: d.desc, price: Number(d.price), duration: Number(d.duration) };
+        const d = Object.fromEntries(new FormData(f)); const s = { name: d.name.trim(), cat: d.cat, desc: d.desc, price: Number(d.price), duration: Number(d.duration) };
         if (f.dataset.id) { s.id = f.dataset.id; s.active = f.querySelector('[name=active]').checked; }
         await DB.saveService(s); U.toast('Guardado'); tabs.refresh(); }); }));
       el.querySelectorAll('[data-del]').forEach((b) => (b.onclick = () => confirm('¿Eliminar servicio?') && U.run(async () => { await DB.deleteService(b.dataset.del); tabs.refresh(); })));
@@ -53,11 +54,11 @@
     equipo: { label: 'Equipo', async render(el) {
       const list = await DB.getBarbers(true);
       const form = (b = {}) => `<form class="card" data-id="${b.id || ''}" style="margin-bottom:12px"><div class="row2"><div class="field"><label>Nombre</label><input name="name" value="${esc(b.name)}" required></div><div class="field"><label>Rol</label><input name="role" value="${esc(b.role)}"></div></div>
-        <div class="field"><label>Presentación</label><input name="bio" value="${esc(b.bio)}"></div><div class="field"><label>Etiquetas (separadas por coma)</label><input name="tags" value="${esc((b.tags || []).join(', '))}"></div>
-        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button class="btn sm" type="submit">${b.id ? 'Guardar' : 'Agregar barbero'}</button>${b.id ? `<label class="check" style="margin:0"><input type="checkbox" name="active" ${b.active ? 'checked' : ''}> Recibe reservas</label>` : ''}</div></form>`;
-      el.innerHTML = `<h3 style="margin-bottom:12px">Nuevo barbero</h3>${form()}<h3 style="margin:24px 0 12px">Equipo</h3>${list.map(form).join('')}`;
+        <div class="field"><label>Áreas que atiende</label><div style="display:flex;gap:14px;flex-wrap:wrap">${DB.getCategories().map((c) => `<label class="check"><input type="checkbox" name="cat_${c.id}" ${(b.cats || []).includes(c.id) ? 'checked' : ''}> ${esc(c.name)}</label>`).join('')}</div></div><div class="field"><label>Presentación</label><input name="bio" value="${esc(b.bio)}"></div><div class="field"><label>Etiquetas (separadas por coma)</label><input name="tags" value="${esc((b.tags || []).join(', '))}"></div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button class="btn sm" type="submit">${b.id ? 'Guardar' : 'Agregar profesional'}</button>${b.id ? `<label class="check" style="margin:0"><input type="checkbox" name="active" ${b.active ? 'checked' : ''}> Recibe reservas</label>` : ''}</div></form>`;
+      el.innerHTML = `<h3 style="margin-bottom:12px">Nuevo profesional</h3>${form()}<h3 style="margin:24px 0 12px">Equipo</h3>${list.map(form).join('')}`;
       el.querySelectorAll('form').forEach((f) => (f.onsubmit = (e) => { e.preventDefault(); U.run(async () => {
-        const d = Object.fromEntries(new FormData(f)); const b = { name: d.name.trim(), role: d.role, bio: d.bio, tags: d.tags.split(',').map((t) => t.trim()).filter(Boolean) };
+        const d = Object.fromEntries(new FormData(f)); const b = { name: d.name.trim(), cats: DB.getCategories().filter((c) => d['cat_' + c.id]).map((c) => c.id), role: d.role, bio: d.bio, tags: d.tags.split(',').map((t) => t.trim()).filter(Boolean) };
         if (f.dataset.id) { b.id = f.dataset.id; b.active = f.querySelector('[name=active]').checked; }
         await DB.saveBarber(b); U.toast('Guardado'); tabs.refresh(); }); }));
     } },

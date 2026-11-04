@@ -29,7 +29,7 @@
       el.innerHTML = `<form class="card" id="pf" style="max-width:560px"><div class="field"><label for="n">Nombre</label><input id="n" value="${esc(u.name)}" required></div>
         <div class="row2"><div class="field"><label for="p">Teléfono</label><input id="p" type="tel" value="${esc(u.phone)}"></div><div class="field"><label for="b">Nacimiento</label><input id="b" type="date" value="${esc(u.birth)}"></div></div>
         <div class="field"><label for="pr">Horario preferido</label><select id="pr">${['cualquiera', 'mañana', 'tarde'].map((o) => `<option ${u.pref === o ? 'selected' : ''}>${o}</option>`).join('')}</select></div>
-        <div class="field"><label for="nt">Notas (tipo de corte, alergias, etc.)</label><textarea id="nt" rows="3">${esc(u.notes)}</textarea></div>
+        <div class="field"><label for="nt">Notas (preferencias, alergias, etc.)</label><textarea id="nt" rows="3">${esc(u.notes)}</textarea></div>
         <label class="check field"><input type="checkbox" id="wa" ${u.whatsapp ? 'checked' : ''}> Recibir recordatorios por WhatsApp</label>
         <label class="check field"><input type="checkbox" id="na" ${u.notifyApp ? 'checked' : ''}> Recibir avisos en la app</label>
         <div style="display:flex;gap:10px"><button class="btn" type="submit">Guardar</button><button class="btn ghost" type="button" id="out">Cerrar sesión</button></div></form>`;

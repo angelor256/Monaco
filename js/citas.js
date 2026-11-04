@@ -4,10 +4,14 @@
   const st = await DB.getSettings(); let user = await U.nav('citas');
   const [services, barbers] = [await DB.getServices(), await DB.getBarbers()];
   const wiz = $('#wiz'), sum = $('#sum');
-  const LABELS = ['Servicio', 'Barbero', 'Fecha y hora', 'Tus datos'];
+  const LABELS = ['Servicio', 'Profesional', 'Fecha y hora', 'Tus datos'];
+  const cats = DB.getCategories();
   const qs = new URLSearchParams(location.search);
   const sel = { service: services.find((s) => s.id === qs.get('servicio')) || null, barber: null, date: null, time: null, slotBarber: null, note: '' };
+  const can = (b) => !b.cats || (sel.service && b.cats.includes(sel.service.cat));
   const qb = qs.get('barbero'); if (qb) sel.barber = barbers.find((b) => b.id === qb) || null;
+  if (sel.barber && !sel.service) sel.service = null;
+  if (sel.barber && sel.service && !can(sel.barber)) sel.barber = null;
   let step = sel.service ? 2 : 1; if (sel.service && sel.barber) step = 3;
   let done = null;
 
@@ -15,7 +19,7 @@
   const stepper = () => { $('#stepper').innerHTML = LABELS.map((l, i) => `<li class="${i + 1 === step ? 'on' : ''} ${i + 1 < step || done ? 'done' : ''}" ${i + 1 === step ? 'aria-current="step"' : ''}>${l}</li>`).join(''); };
   const summary = () => {
     const row = (k, v) => `<div><span class="muted">${k}</span><b>${v || '—'}</b></div>`;
-    sum.innerHTML = `<h3 style="margin-bottom:14px">Tu reserva</h3><div class="summary">${row('Servicio', sel.service && esc(sel.service.name))}${row('Barbero', step > 2 || sel.barber ? esc(barberName()) : '')}
+    sum.innerHTML = `<h3 style="margin-bottom:14px">Tu reserva</h3><div class="summary">${row('Servicio', sel.service && esc(sel.service.name))}${row('Profesional', step > 2 || sel.barber ? esc(barberName()) : '')}
       ${row('Día', sel.date && U.fmtDate(sel.date))}${row('Hora', sel.time)}${row('Duración', sel.service && sel.service.duration + ' min')}${row('Total', sel.service && U.money(sel.service.price, st.currency))}</div>
       <p class="muted" style="font-size:.82rem;margin-top:14px">Pagás en el local. Cancelación gratis hasta ${st.cancelHours} h antes.</p>`;
   };
@@ -32,11 +36,11 @@
       return;
     }
     if (step === 1) {
-      wiz.innerHTML = '<h2 style="font-size:1.5rem;margin-bottom:14px">1. Elegí el servicio</h2>' + services.map((s) => `<button class="opt ${sel.service && sel.service.id === s.id ? 'sel' : ''}" data-id="${s.id}"><span><b>${esc(s.name)}</b><br><small class="muted">${s.duration} min</small></span><span class="price">${U.money(s.price, st.currency)}</span></button>`).join('');
-      wiz.querySelectorAll('.opt').forEach((b) => (b.onclick = () => { sel.service = services.find((s) => s.id === b.dataset.id); sel.date = sel.time = null; go(2); }));
+      wiz.innerHTML = '<h2 style="font-size:1.5rem;margin-bottom:6px">1. Elegí el servicio</h2>' + cats.map((c) => `<h3 class="grp">${esc(c.name)}</h3>` + services.filter((s) => s.cat === c.id).map((s) => `<button class="opt ${sel.service && sel.service.id === s.id ? 'sel' : ''}" data-id="${s.id}"><span><b>${esc(s.name)}</b><br><small class="muted">${s.duration} min</small></span><span class="price">${U.money(s.price, st.currency)}</span></button>`).join('')).join('');
+      wiz.querySelectorAll('.opt').forEach((b) => (b.onclick = () => { sel.service = services.find((s) => s.id === b.dataset.id); if (sel.barber && !can(sel.barber)) sel.barber = null; sel.date = sel.time = null; go(2); }));
     } else if (step === 2) {
       const any = `<button class="opt ${!sel.barber ? 'sel' : ''}" data-id="any"><span class="l"><span class="av" aria-hidden="true">★</span><span><b>Cualquiera disponible</b><br><small class="muted">Más horarios libres</small></span></span></button>`;
-      wiz.innerHTML = '<h2 style="font-size:1.5rem;margin-bottom:14px">2. Elegí tu barbero</h2>' + any + barbers.map((b) => `<button class="opt ${sel.barber && sel.barber.id === b.id ? 'sel' : ''}" data-id="${b.id}"><span class="l"><span class="av" aria-hidden="true">${esc(U.initials(b.name))}</span><span><b>${esc(b.name)}</b><br><small class="muted">${esc(b.role)}</small></span></span></button>`).join('') + nav(true);
+      wiz.innerHTML = '<h2 style="font-size:1.5rem;margin-bottom:14px">2. Elegí tu profesional</h2>' + any + barbers.filter(can).map((b) => `<button class="opt ${sel.barber && sel.barber.id === b.id ? 'sel' : ''}" data-id="${b.id}"><span class="l"><span class="av" aria-hidden="true">${esc(U.initials(b.name))}</span><span><b>${esc(b.name)}</b><br><small class="muted">${esc(b.role)}</small></span></span></button>`).join('') + nav(true);
       wiz.querySelectorAll('.opt').forEach((b) => (b.onclick = () => { sel.barber = barbers.find((x) => x.id === b.dataset.id) || null; sel.date = sel.time = null; go(3); }));
       $('#back', wiz).onclick = () => go(1);
     } else if (step === 3) {

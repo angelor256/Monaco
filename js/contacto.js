@@ -12,11 +12,12 @@
   // Mapa: configurable (st.mapEmbed); por defecto un punto de ejemplo en OpenStreetMap
   $('#map').src = st.mapEmbed || 'https://www.openstreetmap.org/export/embed.html?bbox=-84.1%2C9.91%2C-84.04%2C9.95&layer=mapnik';
   const faqs = [
-    ['¿Cómo reservo un turno?', 'Desde “Reservar”: elegís servicio, barbero, día y hora, y confirmás. Necesitás una cuenta gratuita para gestionar tus turnos.'],
+    ['¿Qué servicios ofrecen?', 'Barbería, estilismo, manicura y pedicura, lashista y estética. Muy pronto, spa con tratamientos.'],
+    ['¿Cómo reservo un turno?', 'Desde “Reservar”: elegís servicio, profesional, día y hora, y confirmás. Necesitás una cuenta gratuita para gestionar tus turnos.'],
     ['¿Puedo cancelar o cambiar mi turno?', `Sí, desde “Mi cuenta” hasta ${st.cancelHours} horas antes sin cargo. Pasado ese plazo, escribinos por WhatsApp.`],
     ['¿Cómo se paga?', 'El pago se hace en el local: efectivo, SINPE Móvil o tarjeta.'],
     ['¿Atienden sin turno?', 'Si hay lugar, sí, pero con turno online tenés tu horario asegurado.'],
-    ['¿Cortan a niños?', 'Sí, tenemos un servicio de corte para niños hasta 12 años.'],
+    ['¿Atienden a niños?', 'Sí, tenemos corte para niños hasta 12 años.'],
     ['¿Qué pasa si llego tarde?', 'Avisanos por WhatsApp. Con más de 15 minutos de demora podemos tener que reprogramar.'],
   ];
   $('#faq').innerHTML = faqs.map(([q, a]) => `<details class="faq"><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('');
