@@ -119,13 +119,12 @@
   S.footer = (st) => {
     if (document.querySelector('.site-footer')) return;
     const f = document.createElement('footer'); f.className = 'site-footer';
-    const open = [2, 3, 4, 5, 6].map((d) => st.hours[d]).find(Boolean);
     f.innerHTML = `<div class="wrap foot-grid"><div><a class="logo" href="index.html">${LOGO}</a><p class="muted" style="margin-top:12px;max-width:30ch">${S.esc(st.tagline)}</p></div>
       <div><h4>Explorar</h4>${LINKS.map(([, href, t]) => `<a href="${href}">${t}</a>`).join('')}<a href="citas.html">Reservar turno</a></div>
-      <div><h4>Visitanos</h4><p class="muted">${S.esc(st.address)}</p>${open ? `<p class="muted">Mar a Sáb · ${DB.util.fromMin(open[0])} – ${DB.util.fromMin(open[1])}</p>` : ''}</div>
+      <div><h4>Visitanos</h4><p class="muted">${S.esc(st.address)}</p>${S.hoursLines(st).map((l) => `<p class="muted">${l}</p>`).join('')}</div>
       <div><h4>Contacto</h4><a href="${S.waLink(st)}" target="_blank" rel="noopener">WhatsApp</a><a href="https://instagram.com/${S.esc(st.instagram)}" target="_blank" rel="noopener">Instagram</a><a href="tel:${S.esc(st.phone.replace(/[^\d+]/g, ''))}">${S.esc(st.phone)}</a></div></div>
       <div class="wrap foot-end"><span>© ${new Date().getFullYear()} ${S.esc(st.name)}</span><a href="admin.html">Acceso dueño</a></div>`;
-    document.body.appendChild(f); S.waFloat(st);
+    document.body.appendChild(f); if (!/\/(admin|cuenta)\.html$/.test(location.pathname)) S.waFloat(st);
   };
 
   /* Modal de login/registro. Devuelve una promesa con el usuario (o null si se cierra). */
@@ -165,6 +164,14 @@
     <div class="meta"><span class="muted">⏱ ${s.duration} min</span><span class="price">${S.money(s.price, st.currency)}</span></div>
     ${bookLink ? `<a class="btn ghost sm" href="citas.html?servicio=${encodeURIComponent(s.id)}">Reservar este servicio</a>` : ''}</article>`;
   S.initials = (n) => n.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase();
+  // Resume horarios agrupando días consecutivos iguales: ["Mar–Jue 10:00 – 20:00", ...]
+  S.hoursLines = (st) => {
+    const order = [1, 2, 3, 4, 5, 6, 0], short = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+    const label = (d) => (st.hours[d] ? `${DB.util.fromMin(st.hours[d][0])} – ${DB.util.fromMin(st.hours[d][1])}` : 'Cerrado');
+    const out = [];
+    order.forEach((d) => { const l = out[out.length - 1]; if (l && l.label === label(d)) l.to = d; else out.push({ from: d, to: d, label: label(d) }); });
+    return out.map((g) => `${g.from === g.to ? short[g.from] : short[g.from] + '–' + short[g.to]} ${g.label}`);
+  };
   S.waLink = (st, text) => `https://wa.me/${st.whatsapp}?text=${encodeURIComponent(text || 'Hola! Quiero consultar por un turno.')}`;
   S.waFloat = (st) => {
     const a = document.createElement('a'); a.className = 'wa-float'; a.href = S.waLink(st); a.target = '_blank'; a.rel = 'noopener'; a.setAttribute('aria-label', 'Escribinos por WhatsApp');
