@@ -288,3 +288,19 @@ details.faq{transition:border-color .2s}details.faq[open]{border-color:var(--gol
 .shot{transition:transform .4s,border-color .4s}.shot:hover{transform:scale(1.03);border-color:var(--gold)}
 .hours div{transition:padding .2s}.hours div:hover{padding-left:8px}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}.swoosh .draw{stroke-dashoffset:0}}
+
+/* ===== v4: áreas del estudio ===== */
+.cats{grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+.card.cat{display:flex;flex-direction:column;gap:8px;color:inherit}
+a.card.cat:hover{border-color:var(--gold);transform:translateY(-4px)}
+.card.cat .ic,.cat-head .ic{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;background:rgba(212,168,90,.12);color:var(--gold);flex:0 0 46px}
+.card.cat .meta{margin-top:auto;padding-top:12px;border-top:1px dashed var(--line);color:var(--muted);font-size:.88rem}
+.card.cat.soon{border-style:dashed;background:linear-gradient(160deg,#1d1810,var(--card))}
+.chip.gold{border-color:var(--gold);color:var(--gold);align-self:flex-start;letter-spacing:.06em;font-size:.7rem;text-transform:uppercase;vertical-align:middle}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:30px;justify-content:center}
+.fchip{background:var(--card);border:1px solid var(--line);border-radius:99px;padding:.55rem 1.1rem;cursor:pointer;color:var(--muted);transition:.2s}
+.fchip:hover{border-color:var(--gold);color:var(--text)}.fchip.on{background:var(--gold);border-color:var(--gold);color:var(--on-gold);font-weight:600}
+.cat-block{margin-bottom:48px}
+.cat-head{display:flex;gap:14px;align-items:center;margin-bottom:18px}
+.cat-head h2{font-size:1.6rem}
+h3.grp{font-family:var(--sans);font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin:18px 0 10px}
